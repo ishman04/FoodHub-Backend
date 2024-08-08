@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minlength: [6, "Password should be at least 6 characters long"]
   }
-});
+},{timestamps:true});
 
 // Create a model using the schema
 const User = mongoose.model('User', userSchema);
