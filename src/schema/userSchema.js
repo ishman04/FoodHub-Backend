@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcrypt')
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -40,6 +40,14 @@ const userSchema = new mongoose.Schema({
 },{timestamps:true});
 
 // Create a model using the schema
+userSchema.pre('save',async function(){
+  console.log("Executing pre save hook")
+  console.log(this)
+  const hashed = await bcrypt.hash(this.password,10)
+  this.password = hashed
+  console.log(this.password)
+  console.log("exitting pre save hook")
+})
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
