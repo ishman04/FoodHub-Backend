@@ -6,6 +6,7 @@ const connectdb = require('./config/dbConfig');
 const User = require('./schema/userSchema');
 const userRouter = require('./routes/userRoute'); // Import without destructuring
 const cartRouter = require('./routes/cartRoute'); // Import without destructuring
+const authRouter = require('./routes/authRoute');
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRouter);
 app.use('/carts', cartRouter);
-
+app.use('/authentication',authRouter)
 app.listen(ServerConfig.PORT, async () => {
     await connectdb();
     console.log(`Server running on port ${ServerConfig.PORT}`);
