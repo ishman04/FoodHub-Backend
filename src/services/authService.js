@@ -15,15 +15,12 @@ class AuthService{
             throw {message: "No user found with the given mail", statusCode: 404}
         }
         const isValidPassword = await bcrypt.compare(plainPassword, user.password)
-        console.log("Plain Password:", plainPassword);
-console.log("Hashed Password from DB:", user.password);
-console.log("Password Match:", isValidPassword);
         if(!isValidPassword){
             throw {message: "Password is invalid", statusCode: 401}
 
         }
         //if password correct create token
-        const token = jwt.sign({email: user.email, _id: user._id}, JWT_SECRET, {
+        const token = jwt.sign({email: user.email, _id: user._id}, JWT_SECRET, {   //payload,secretkey,options
             expiresIn: '1h'
         })
         return token
