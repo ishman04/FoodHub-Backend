@@ -1,3 +1,5 @@
+// Node.js middleware function named isLoggedIn, which is designed to check if a user is authenticated before allowing them to access certain routes in an Express.js application
+
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/serverConfig');
 
@@ -13,7 +15,7 @@ async function isLoggedIn(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET); //to check if token found is not tampered and is valid
 
         if (!decoded) {
             return res.status(401).json({
