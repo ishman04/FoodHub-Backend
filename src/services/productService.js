@@ -1,5 +1,6 @@
 const cloudinary = require('../config/cloudinaryConfig')
 const fs = require('fs/promises')
+const InternalServerError = require('../utils/internalServerError')
 class ProductService{
     constructor(productRepository){
         this.productRepository = productRepository
@@ -12,14 +13,15 @@ class ProductService{
             try {
                 const cloudinaryResponse = await cloudinary.uploader.upload(productDetails.imagePath)
                 var productImage = cloudinaryResponse.secure_url
-                await fs.unlink(productDetails.imagePath)
+                await fs.unlink(process.cwd() + '/'+productDetails.imagePath)
             } catch (error) {
                     console.log("Error while uploading image to cloudinary: ", error)
+                    throw new InternalServerError();
             }
         }
         const product = await this.productRepository.createProduct({
             ...productDetails,
-            productImage: productImage
+            productImage: productImage || undefined
         })
         if(!product){
             throw {reason: 'Product not created',statusCode: 500}

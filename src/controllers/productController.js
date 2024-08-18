@@ -1,5 +1,6 @@
 const ProductRepository = require("../repositories/productRepository")
-const ProductService = require("../services/productService")
+const ProductService = require("../services/productService");
+const AppError = require("../utils/appError");
 
 async function createProd(req,res){
     try {
@@ -8,7 +9,7 @@ async function createProd(req,res){
         const productDetails = await products.createProduct({
             name: req.body.name,
             description: req.body.description,
-            imagePath: req.file.path,
+            imagePath: req.file?.path, // Path to the image stored by multer. ? is there to check if file exists 
             price: req.body.price,
             category: req.body.category,
             inStock: req.body.inStock
@@ -22,13 +23,22 @@ async function createProd(req,res){
 
         })    
     } catch (error) {
-        console.log(error)
-        res.json({
-            success: false,
-            message: error.reason,
-            data: {},
-            error: error
-        })
+        if(error instanceof AppError){
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+                data: {},
+                error: error
+            })    
+        }
+        else{
+            res.status(500).json({
+                success: false,
+                message: error.reason,
+                data: {},
+                error: error
+            })
+        }
     }
     
 }
