@@ -13,7 +13,7 @@ class ProductService{
             try {
                 const cloudinaryResponse = await cloudinary.uploader.upload(productDetails.imagePath)
                 var productImage = cloudinaryResponse.secure_url
-                await fs.unlink(process.cwd() + '/'+productDetails.imagePath)
+                await fs.unlink(process.cwd() + '/'+productDetails.imagePath) //process.cwd returns root directory path
             } catch (error) {
                     console.log("Error while uploading image to cloudinary: ", error)
                     throw new InternalServerError();

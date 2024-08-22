@@ -8,5 +8,6 @@ class UserRepository{
         const newUser = await User.create(userDetails)
         return newUser;
     }
+
 }
 module.exports = UserRepository;

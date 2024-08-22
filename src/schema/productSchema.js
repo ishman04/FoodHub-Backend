@@ -13,7 +13,8 @@ const productSchema = new mongoose.Schema({
     },
     productImage: {
         //we will not store image directly in database(to not make it heavy) but will use some other service to store images and use the url of that service in our database
-         type:String
+         type:String,
+         default: 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'
     },
     price:{
         type: Number,
