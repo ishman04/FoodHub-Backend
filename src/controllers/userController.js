@@ -13,6 +13,7 @@ async function createUser(req, res) {
             error: {},
             success: true
         });
+        
     } catch (error) {
         return res.status(error.statusCode || 500).json({
             message: "Failed",
