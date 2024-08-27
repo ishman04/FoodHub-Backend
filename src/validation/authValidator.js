@@ -58,8 +58,6 @@ async function isAdmin(req,res,next){
             success: false
         })
     }
-    
-
 }
 
 module.exports = {

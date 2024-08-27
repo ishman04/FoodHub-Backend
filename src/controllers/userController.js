@@ -1,9 +1,10 @@
 const model = require('mongoose');
 const UserService = require('../services/userService');
 const UserRepository = require('../repositories/userRepository');
+const CartRepository = require('../repositories/cartRepository');
 
 async function createUser(req, res) {
-    const userService = new UserService(new UserRepository());
+    const userService = new UserService(new UserRepository(),new CartRepository());
 
     try {
         const user = await userService.registerUser(req.body);

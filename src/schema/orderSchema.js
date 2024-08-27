@@ -26,6 +26,19 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["ordered","cancelled","processing","out_for_delivery","cancelled"]
+        enum: ["ordered","cancelled","processing","out_for_delivery","cancelled"],
+        default: "ordered"
+    },
+    address: {
+        type: String,
+        minLength: [10,"Address should be atleast 10 characters"]
+    },
+    paymentMethod: {
+        type: String,
+        enum: ["online","cash"],
+        default: "cash"
     }
 },{timestamps:true})
+
+const Order = mongoose.model("Order",orderSchema);
+module.exports = Order;

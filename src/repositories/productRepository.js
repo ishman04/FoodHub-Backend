@@ -9,7 +9,7 @@ class ProductRepository{
             return await product.save();
         } catch (error) {
             if(error.name === 'ValidationError'){
-                const errorMessageList = Object.keys(error.errors).forEach((property) => { //error has a property named errors
+                const errorMessageList = Object.keys(error.errors).map((property) => { //error has a property named errors
                     return error.errors[property].message;
                 });
 

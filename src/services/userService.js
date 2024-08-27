@@ -1,6 +1,8 @@
+const {createCart} = require('../repositories/cartRepository')
 class UserService {
-    constructor(userRepository) {
+    constructor(userRepository,cartRepository) {
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
     }
 
     async registerUser(userDetails) {
@@ -24,6 +26,8 @@ class UserService {
         if (!newUser) {
             throw { reason: "Failed to create user", statusCode: 500 };
         }
+
+        await this.cartRepository.createCart(newUser._id);
 
         return newUser;
     }
