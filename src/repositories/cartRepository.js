@@ -34,13 +34,15 @@ class CartRepository{
         try {
             const cart = await Cart.findOne({
                 user : userId
-            });
+            }).populate('items.product');
             return cart;
         } catch (error) {
             console.log(error);
             throw new InternalServerError();
         }
     }
+
+    
     
 }
 

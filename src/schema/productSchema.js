@@ -30,6 +30,11 @@ const productSchema = new mongoose.Schema({
         required: [true, "In stock status is required"],
         default : true
     },
+    quantity:{
+        type: Number,
+        default: 10,
+        required: true
+    }
 },{timestamps: true})
 const Product = mongoose.model("Product",productSchema);
 

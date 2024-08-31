@@ -32,23 +32,28 @@ const userSchema = new mongoose.Schema({
     unique: [true, "Email is already in use"],
     match: [ /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid email address"]
   },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    minlength: [6, "Password should be at least 6 characters long"]
-  },
   role:{
     type:String,
     enum: ['admin', 'user'],
     default: 'user'
+  },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    minlength: [6, "Password should be at least 6 characters long"]
   }
+  
 },{timestamps:true});
 
-// Create a model using the schema
+
 userSchema.pre('save',async function(){
   const hashed = await bcrypt.hash(this.password,10)
   this.password = hashed
+
+
 })
+
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
