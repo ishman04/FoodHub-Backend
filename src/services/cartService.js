@@ -1,3 +1,4 @@
+
 const AppError = require("../utils/appError");
 const BadRequestError = require("../utils/badRequestError");
 const NotFoundError = require("../utils/notFoundError");
@@ -77,6 +78,12 @@ class CartService{
 
         return cart;
     }
+
+    async removeItemsFromCart(userId){
+        const response = await this.cartRepository.clearCart(userId);
+        return response;
+    }
+
 }
 
 module.exports = CartService;

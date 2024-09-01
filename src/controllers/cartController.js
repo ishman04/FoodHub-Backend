@@ -1,4 +1,3 @@
-const model = require('mongoose')
 const CartService = require('../services/cartService')
 const CartRepository = require('../repositories/cartRepository');
 const AppError = require('../utils/appError');
@@ -66,8 +65,39 @@ async function modifyProductToCart(req,res){
     }
      
 }
+async function clearCartById(req,res){
+    const carts = new CartService(new CartRepository(),new ProductRepository());
+    try {
+        const cart = await carts.removeItemsFromCart(req.user.id);
+        res.status(200).json({
+            status: true,
+            message: "Successfully cleared cart",
+            data: cart,
+            error: {},
+        })   
+    } catch (error) {
+        console.log(error);
+        if(error instanceof AppError){
+            res.status(error.statusCode).json({
+                status: false,
+                message: error.message,
+                data: {},
+                error: error
+            })
+        }
+        else{
+            res.status(500).json({
+                status: false,
+                message: "Something went wrong",
+                data: {},
+                error: error.message || error
+            })
+        }
+    }
+}
 
 module.exports = {
     getCartByUser,
-    modifyProductToCart
+    modifyProductToCart,
+    clearCartById
 }
