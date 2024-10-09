@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
         {
             product: {
                 type: mongoose.Schema.Types.ObjectId,
-                require: true,
+                required: true,
                 ref: 'Product'
             },
             quantity: {
@@ -31,7 +31,8 @@ const orderSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        minLength: [10,"Address should be atleast 10 characters"]
+        required: true,
+        ref: 'User'
     },
     paymentMethod: {
         type: String,

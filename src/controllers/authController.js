@@ -2,6 +2,15 @@ const UserRepository = require("../repositories/userRepository");
 const AuthService = require("../services/authService");
 const cookieParser = require('cookie-parser') //used for req.cookies
 
+async function logout(req,res){
+    res.cookie("authToken",null)
+    return res.status(200).json({
+        success: true,
+        message: "Logout successfull",
+        error: {},
+        data:{}
+    })
+}
 async function login(req,res){
     console.log(req.cookies) //displays prev queries sent by the client and which are stored at browser
     const authService = new AuthService(new UserRepository);
@@ -27,4 +36,4 @@ async function login(req,res){
     }
     
 }
-module.exports = {login};
+module.exports = {login,logout};

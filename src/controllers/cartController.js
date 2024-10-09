@@ -40,7 +40,7 @@ async function modifyProductToCart(req,res){
         const cart = await carts.modifyCart(req.user.id,req.params.productId,req.params.operation=="add");
         res.status(200).json({
             status: true,
-            message: "Successfully added product to cart",
+            message: "Successfully modified cart",
             data: cart,
             error: {}
         })   

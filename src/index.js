@@ -12,6 +12,7 @@ const { isLoggedIn } = require('./validation/authValidator');
 const uploader = require('./middlewares/multerMiddleware');
 const fs = require('fs/promises'); 
 const productRouter = require('./routes/productRoute');
+const orderRouter = require('./routes/orderRoutes');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/users', userRouter);
 app.use('/carts', cartRouter);
 app.use('/auth',authRouter)
 app.use('/product',productRouter)
+app.use('/order',orderRouter);
 
 app.listen(ServerConfig.PORT, async () => {
     await connectdb();

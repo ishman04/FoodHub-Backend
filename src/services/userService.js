@@ -20,7 +20,8 @@ class UserService {
             password: userDetails.password,
             lastName: userDetails.lastName,
             firstName: userDetails.firstName,
-            mobileNumber: userDetails.mobileNumber
+            mobileNumber: userDetails.mobileNumber,
+            address: userDetails.address
         });
 
         if (!newUser) {

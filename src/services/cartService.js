@@ -27,18 +27,19 @@ class CartService{
             throw new NotFoundError("Product");
         }
 
-        if (!product.inStock && product.quantity <= 0) {
-            throw new BadRequestError(["Product not in stock"]);
+        if (shouldAdd && (!product.inStock || product.quantity <= 0)) {
+            throw new AppError("Product not in stock",400);
         }
 
         let foundProduct = false;
         if ((cart.items).length !== 0) {
             cart.items.forEach((prod) => {
-                if (prod.product._id.toString() === productId) {
+                if (prod.product._id == productId) {
                     foundProduct = true;
                     if (shouldAdd) {
                         if (product.quantity >= 1) {
                             prod.quantity += 1;
+                            cart.totalPrice += product.price;
                             product.quantity -= 1;
                         } else {
                             throw new AppError("The quantity of the product requested is not available", 404);
@@ -46,6 +47,7 @@ class CartService{
                     } else {
                         if (prod.quantity > 0) {
                             prod.quantity -= 1;
+                            cart.totalPrice -= product.price;
                             product.quantity += 1;
                             if (prod.quantity === 0) {
                                 // Mark the product for removal
@@ -64,18 +66,21 @@ class CartService{
        
 
         if (shouldAdd && !foundProduct) {
+            if (product.quantity <= 0) {
+                throw new AppError("Product not in stock");
+            }
             cart.items.push({
                 product: productId,
                 quantity: 1
             });
             product.quantity -= 1;
+            cart.totalPrice += product.price;
         } else if (!shouldAdd && !foundProduct) {
             throw new NotFoundError("Product in the cart");
         }
 
         await cart.save();
         await product.save();
-
         return cart;
     }
 
