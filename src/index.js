@@ -20,7 +20,7 @@ app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.get('/ping',isLoggedIn,(req,res)=>{
+app.get('/ping',(req,res)=>{
     console.log('pinged')
     res.json({
         message: "pong"
