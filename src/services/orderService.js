@@ -62,6 +62,15 @@ class OrderService{
         }
         return order;
     }
+
+    async fetchAllPendingOrders(){
+        try {
+            const orders = await this.orderRepository.findPendingOrders();
+            return orders;
+        } catch (error) {
+            throw new Error('Error fetching pending orders')
+        }
+    }
 }
 
 module.exports = OrderService

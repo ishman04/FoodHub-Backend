@@ -162,11 +162,34 @@ async function changeOrderStatus(req,res){
     }
 
 }
+
+async function getAllPendingOrders(req,res){
+    const orderService = new OrderService(
+        new CartRepository(),
+        new UserRepository(),
+        new OrderRepository()
+    );
+
+    try {
+        const pendingOrders = await orderService.fetchAllPendingOrders();
+        res.status(200).json({
+            success: true,
+            data: pendingOrders,
+        });
+    } catch (error) {
+        console.error('Error in getAllPendingOrders:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch pending orders',
+        });
+    }
+}
+
 module.exports = {
     creatingANewOrder,
     getAllOrders,
     getOrder,
     cancelOrder,
-    changeOrderStatus
-
+    changeOrderStatus,
+    getAllPendingOrders
 }

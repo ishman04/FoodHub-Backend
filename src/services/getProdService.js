@@ -18,6 +18,13 @@ class getProductService{
         }
         return prod;
     }
+    async getAllProductsData(){
+        const prods = await this.productRepository.getAllProducts();
+         if(!prods){
+            throw new NotFoundError('Product');
+        }
+        return prods;
+    }
 
 }
 

@@ -13,9 +13,14 @@ const uploader = require('./middlewares/multerMiddleware');
 const fs = require('fs/promises'); 
 const productRouter = require('./routes/productRoute');
 const orderRouter = require('./routes/orderRoutes');
+const cors = require('cors')
+
 
 const app = express();
-
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))  // to allow cross platform requests
 app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.text());

@@ -24,7 +24,10 @@ class AuthService{
         const token = jwt.sign({email: user.email, _id: user._id, role: userRole}, JWT_SECRET, {   //payload,secretkey,options
             expiresIn: '1h'
         })
-        return token
+        return {token,userRole, userData:{
+            email: user.email,
+            firstName : user.firstName
+        }}
     }
 
 

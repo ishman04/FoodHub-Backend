@@ -48,10 +48,21 @@ class OrderRepository{
             const order = await Order.findByIdAndUpdate(orderId,{status:status},{
                 new:true,
             });
+            return order;
         } catch (error) {
             console.log(error);
             throw new InternalServerError();  
         } 
+    }
+
+    async findPendingOrders() {
+        try {
+            const pendingOrders = await Order.find({ status: 'ordered' }).populate('user', 'firstName email');
+            return pendingOrders;
+        } catch (error) {
+            console.error('Error in findPendingOrders:', error); // Add a detailed log
+            throw new InternalServerError('Error fetching pending orders from database');
+        }
     }
 }
 module.exports = OrderRepository;

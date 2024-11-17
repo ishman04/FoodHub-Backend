@@ -28,6 +28,15 @@ class ProductRepository{
             throw new InternalServerError();
         }
     }
+    async getAllProducts(){
+        try {
+            const prods = await Product.find({});
+            return prods;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError();
+        }
+    }
     async deleteProdById(ids){
         try {
             const prod = await Product.findByIdAndDelete(ids);
