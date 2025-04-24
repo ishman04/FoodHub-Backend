@@ -9,7 +9,7 @@ class OrderService{
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
     }
-    async createOrder(userId,paymentMethod){
+    async createOrder(userId,orderDetails){
         const user = await this.userRepository.findUser({_id:userId});
         const cart = await this.cartRepository.getCartByUserId(userId);
         if(!user){
@@ -31,8 +31,9 @@ class OrderService{
         });
         order.status = "ordered";
         order.totalPrice = cart.totalPrice;
-        order.address = user.address;
-        order.paymentMethod = paymentMethod;
+        
+        order.address = orderDetails.address;
+        order.paymentMethod = orderDetails.paymentMethod;
 
         const response = await this.orderRepository.createNewOrder(order);
 

@@ -7,7 +7,7 @@ const AppError = require("../utils/appError");
 async function creatingANewOrder(req,res){
     const obj = new OrderService(new CartRepository,new UserRepository,new OrderRepository)
     try {
-        const order = await obj.createOrder(req.user.id,req.body.paymentMethod);
+        const order = await obj.createOrder(req.user.id,req.body);
         res.status(200).json({
             status: true,
             message: "Successfully created order",

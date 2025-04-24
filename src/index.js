@@ -13,7 +13,8 @@ const uploader = require('./middlewares/multerMiddleware');
 const fs = require('fs/promises'); 
 const productRouter = require('./routes/productRoute');
 const orderRouter = require('./routes/orderRoutes');
-const cors = require('cors')
+const cors = require('cors');
+const analyticsRouter = require('./routes/analyticsRoute');
 
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/carts', cartRouter);
 app.use('/auth',authRouter)
 app.use('/product',productRouter)
 app.use('/order',orderRouter);
+app.use('/analytics',analyticsRouter)
 
 app.listen(ServerConfig.PORT, async () => {
     await connectdb();
