@@ -6,6 +6,9 @@ class AnalyticsService {
     async getTopProducts() {
         return await this.analyticsRepository.getTopProducts();
     }
+    async getTopCustomers() {
+        return await this.analyticsRepository.getTopCustomers();
+    }
 }
 
 module.exports = AnalyticsService;

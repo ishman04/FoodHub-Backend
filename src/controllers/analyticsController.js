@@ -21,5 +21,22 @@ async function getTopProducts(req, res) {
         });
     }
 }
+async function getTopCustomers(req, res) {
+    const analyticsService = new AnalyticsService(new AnalyticsRepository());
+    try {
+        const topCustomers = await analyticsService.getTopCustomers();
+        return res.status(200).json({
+            message: "Top customers fetched successfully",
+            data: topCustomers,
+            error: {}
+        });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message,
+            data: {},
+            error: error
+        });
+    }
+}
 
-module.exports = { getTopProducts };
+module.exports = { getTopProducts,getTopCustomers };
