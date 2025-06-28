@@ -38,20 +38,20 @@ class AnalyticsRepository {
     async getTopCustomers() {
         try {
             const topCustomers = await Order.aggregate([
-                { $group: {                                      // Group orders by user
-                    _id: "$user",                                // _id will be user's ObjectId
-                    totalOrdersValue: { $sum: "$totalPrice" }        // Sum the total price of orders
+                { $group: {                                      
+                    _id: "$user",                                
+                    totalOrdersValue: { $sum: "$totalPrice" }        
                 }},
-                { $sort: { totalOrdersValue: -1 } },                   // Sort by totalOrders in descending order
-                { $limit: 5 },                                   // Limit to the top 5 customers
-                { $lookup: {                                     // Join with 'users' collection to get user details
+                { $sort: { totalOrdersValue: -1 } },                   
+                { $limit: 5 },                                 
+                { $lookup: {                                   
                     from: "users",
                     localField: "_id",
                     foreignField: "_id",
                     as: "userDetails"
                 }},
-                { $unwind: "$userDetails" },                      // Unwind the userDetails array
-                { $project: {                                    // Project fields
+                { $unwind: "$userDetails" },                      
+                { $project: {                                    
                     _id: 0,
                     userId: "$_id",
                     firstName: "$userDetails.firstName",

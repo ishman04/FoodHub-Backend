@@ -15,6 +15,7 @@ const productRouter = require('./routes/productRoute');
 const orderRouter = require('./routes/orderRoutes');
 const cors = require('cors');
 const analyticsRouter = require('./routes/analyticsRoute');
+const deliveryRouter = require('./routes/deliveryRoutes');
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json())
 app.get('/ping',(req,res)=>{
     console.log('pinged')
     res.json({
@@ -39,6 +41,7 @@ app.use('/auth',authRouter)
 app.use('/product',productRouter)
 app.use('/order',orderRouter);
 app.use('/analytics',analyticsRouter)
+app.use('/delivery',deliveryRouter)
 
 app.listen(ServerConfig.PORT, async () => {
     await connectdb();
