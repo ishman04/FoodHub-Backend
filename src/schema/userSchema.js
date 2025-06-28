@@ -36,15 +36,17 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'user'
   },
-  address:{
-    type: "String",
-    minlength: [10,"Address should have atleast 10 characters"],
-  },
   password: {
     type: String,
     required: [true, "Password is required"],
     minlength: [6, "Password should be at least 6 characters long"]
-  }
+  },
+  address: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Address'
+    }
+  ]
   
 },{timestamps:true});
 

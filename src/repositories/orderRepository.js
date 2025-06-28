@@ -27,7 +27,7 @@ class OrderRepository{
     }
     async getOrdersByUserId(userId){
         try {
-            const order = await Order.find({user:userId}).populate('items.product');
+            const order = await Order.find({user:userId}).populate('items.product').populate('address');
             return order;
         } catch (error) {
             console.log(error);
@@ -36,7 +36,7 @@ class OrderRepository{
     }
     async getOrderById(orderId){
         try {
-            const order = await Order.findById(orderId).populate('items.product');
+            const order = await Order.findById(orderId).populate('items.product').populate('address');
             return order;
         } catch (error) {
             console.log(error);

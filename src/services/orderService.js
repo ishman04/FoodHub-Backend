@@ -43,14 +43,14 @@ class OrderService{
         return response;
     }
     async getAllOrdersCreatedByUser(userId){
-        const order = await this.orderRepository.getOrdersByUserId(userId); 
+        const order = await this.orderRepository.getOrdersByUserId(userId)
         if(!order){
             throw new NotFoundError("Orders");
         }    
         return order;
     }
     async getOrderDetailsById(orderId){
-        const order = await this.orderRepository.getOrderById(orderId); 
+        const order = await this.orderRepository.getOrderById(orderId) 
         if(!order){
             throw new NotFoundError("Order");
         }    
