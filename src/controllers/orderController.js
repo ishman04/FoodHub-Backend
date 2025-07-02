@@ -185,11 +185,33 @@ async function getAllPendingOrders(req,res){
     }
 }
 
+async function getDeliveredOrdersForAdmin(req,res){
+    const orderService = new OrderService(
+        new CartRepository(),
+        new UserRepository(),
+        new OrderRepository()
+    );
+
+    try {
+        const Orders = await orderService.AllOrders();
+        res.status(200).json({
+            success: true,
+            data: Orders,
+        });
+    } catch (error) {
+        console.error('Error in All Orders:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch all orders',
+        });
+    }
+}
 module.exports = {
     creatingANewOrder,
     getAllOrders,
     getOrder,
     cancelOrder,
     changeOrderStatus,
-    getAllPendingOrders
+    getAllPendingOrders,
+    getDeliveredOrdersForAdmin
 }

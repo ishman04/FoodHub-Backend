@@ -31,6 +31,9 @@ class OrderService{
         });
         order.status = "ordered";
         order.totalPrice = cart.totalPrice;
+        order.paymentIntentId = orderDetails?.paymentIntentId
+        order.isPaid = orderDetails.isPaid
+        order.paidAt = orderDetails.paidAt
         
         order.address = orderDetails.address;
         order.paymentMethod = orderDetails.paymentMethod;
@@ -61,6 +64,7 @@ class OrderService{
         if(!order){
             throw new NotFoundError("Order");
         }
+        console.log("Updated order:", order);
         return order;
     }
 
@@ -70,6 +74,14 @@ class OrderService{
             return orders;
         } catch (error) {
             throw new Error('Error fetching pending orders')
+        }
+    }
+    async AllOrders(){
+        try {
+            const orders = await this.orderRepository.getAllOrdersForAdmin();
+            return orders;
+        } catch (error) {
+            throw new Error('Error fetching orders')
         }
     }
 }

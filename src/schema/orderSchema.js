@@ -27,7 +27,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["ordered","delivered"],
+        enum: ["ordered","preparing","out_for_delivery","delivered"],
         default: "ordered"
     },
     address: {
@@ -37,9 +37,15 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ["online","cash"],
+        enum: ["card","cash"],
         default: "cash"
-    }
+    },
+    paymentIntentId: String,
+    isPaid: {
+        type: Boolean,
+        default: false
+    },
+    paidAt: Date
 },{timestamps:true})
 
 const Order = mongoose.model("Order",orderSchema);

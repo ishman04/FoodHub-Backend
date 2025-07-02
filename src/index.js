@@ -16,6 +16,9 @@ const orderRouter = require('./routes/orderRoutes');
 const cors = require('cors');
 const analyticsRouter = require('./routes/analyticsRoute');
 const deliveryRouter = require('./routes/deliveryRoutes');
+const paymentRouter = require('./routes/paymentRoutes');
+const webhookRouter = require('./routes/webhookRoutes');
+
 
 
 const app = express();
@@ -23,6 +26,7 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }))  // to allow cross platform requests
+app.use('/webhook', webhookRouter);
 app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.text());
@@ -42,6 +46,8 @@ app.use('/product',productRouter)
 app.use('/order',orderRouter);
 app.use('/analytics',analyticsRouter)
 app.use('/delivery',deliveryRouter)
+app.use('/payment',paymentRouter)
+// app.use('/webhook',webhookRouter)
 
 app.listen(ServerConfig.PORT, async () => {
     await connectdb();

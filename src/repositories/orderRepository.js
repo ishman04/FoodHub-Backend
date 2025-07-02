@@ -57,10 +57,20 @@ class OrderRepository{
 
     async findPendingOrders() {
         try {
-            const pendingOrders = await Order.find({ status: 'ordered' }).populate('user', 'firstName email');
+            const pendingOrders = await Order.find({ $or: [{status: 'ordered'},{status: 'preparing'}, {status: 'out_for_delivery'} ]}).populate('user', 'firstName email mobileNumber').populate('address','houseNumber area').populate('items.product','name category price');
             return pendingOrders;
         } catch (error) {
             console.error('Error in findPendingOrders:', error); // Add a detailed log
+            throw new InternalServerError('Error fetching pending orders from database');
+        }
+    }
+
+    async getAllOrdersForAdmin() {
+        try {
+            const Orders = await Order.find({status: 'delivered'}).populate('user', 'firstName email mobileNumber').populate('address','houseNumber area').populate('items.product','name category price');
+            return Orders;
+        } catch (error) {
+            console.error('Error in fetching Orders:', error); // Add a detailed log
             throw new InternalServerError('Error fetching pending orders from database');
         }
     }
