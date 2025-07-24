@@ -23,10 +23,13 @@ const webhookRouter = require('./routes/webhookRoutes');
 
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: true,
     credentials: true
 }))  // to allow cross platform requests
-app.use('/webhook', webhookRouter);
+app.use(
+  '/webhook', // this is crucial
+  webhookRouter
+);
 app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.text());

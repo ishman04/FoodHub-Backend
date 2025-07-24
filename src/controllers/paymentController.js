@@ -63,25 +63,22 @@ const handleWebhook = async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("⚠️ Webhook signature verification failed:", err.message);
+    console.error('⚠️ Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   switch (event.type) {
     case 'payment_intent.succeeded': {
       const paymentIntent = event.data.object;
-      const { userId, addressId, paymentMethod, amount} = paymentIntent.metadata;
+      const { userId, addressId, paymentMethod, amount } = paymentIntent.metadata;
 
       try {
-        // ✅ Re-fetch cart securely from DB
-        const cart = await Cart.findOne({user: userId}).populate("items.product");
-
+        const cart = await Cart.findOne({ user: userId }).populate('items.product');
         if (!cart || cart.items.length === 0) {
           console.warn(`⚠️ No cart found for user ${userId}`);
           break;
         }
 
-        // ✅ Create order from actual DB cart
         const newOrder = await Order.create({
           user: userId,
           items: cart.items,
@@ -91,32 +88,26 @@ const handleWebhook = async (req, res) => {
           paymentIntentId: paymentIntent.id,
           isPaid: true,
           paidAt: new Date(),
-          status: "ordered"
+          status: 'ordered',
         });
 
+        await Cart.deleteOne({ user: userId }); // Clear cart after successful order
+
         console.log(`✅ Order ${newOrder._id} created for PaymentIntent ${paymentIntent.id}`);
-
-
       } catch (err) {
-        console.error("❌ Error while creating order:", err.message);
+        console.error('❌ Error while creating order:', err.message);
       }
 
       break;
     }
 
-    case 'payment_intent.payment_failed': {
-      const paymentIntent = event.data.object;
-      console.warn(`❌ Payment failed for intent ${paymentIntent.id}`);
-      // Optionally log or notify the user
+    case 'payment_intent.payment_failed':
+      console.warn(`❌ Payment failed for intent ${event.data.object.id}`);
       break;
-    }
 
-    case 'payment_intent.canceled': {
-      const paymentIntent = event.data.object;
-      console.warn(`⚠️ Payment canceled for intent ${paymentIntent.id}`);
-      // Optionally mark any temporary order or payment attempt
+    case 'payment_intent.canceled':
+      console.warn(`⚠️ Payment canceled for intent ${event.data.object.id}`);
       break;
-    }
 
     default:
       console.log(`ℹ️ Unhandled event type: ${event.type}`);
