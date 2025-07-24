@@ -9,7 +9,7 @@ async function createProd(req,res){
         const productDetails = await products.createProduct({
             name: req.body.name,
             description: req.body.description,
-            imagePath: req.file?.path, // Path to the image stored by multer. ? is there to check if file exists 
+            imagePath: req.file?.path, 
             price: req.body.price,
             category: req.body.category,
             inStock: req.body.inStock
