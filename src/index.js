@@ -23,7 +23,7 @@ const webhookRouter = require('./routes/webhookRoutes');
 
 const app = express();
 app.use(cors({
-    origin: true,
+    origin: "https://food-hub-frontend-eight.vercel.app",
     credentials: true
 }))  // to allow cross platform requests
 app.use(

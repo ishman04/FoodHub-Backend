@@ -6,8 +6,9 @@ async function logout(req,res){
     console.log("Cookie from frontend", req.cookies)
     res.cookie("authToken","",{
         httpOnly: true,
-        secure: false,
-        maxAge: 7*24*60*60*1000
+        secure: true,
+        sameSite: "None",
+        expires: new Date(0)
     })
     return res.status(200).json({
         success: true,
@@ -24,7 +25,8 @@ async function login(req,res){
 
         res.cookie("authToken", result.token, { //creates a new cookie containing new jwt token on the browser
             httpOnly: true, //makes cookie unavailable to user (only stored in backend)
-            secure: false,
+            secure: true,
+            sameSite: "None",
             maxAge: 7*24*60*60*1000 //if we implement a refresh token mech then after out token expires in 1 hr a new token is automatically generated reducing chance of hacking and our token gets refreshed after every hour for 7 days enabling user to not login after every hour and he has to login after 7 days next time
         })
         return res.status(200).json({
