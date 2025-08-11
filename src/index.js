@@ -36,7 +36,7 @@ app.use(cors({
     credentials: true
 }));
 
-// app.use('/webhook', webhookRouter); // Must be before bodyParser.json() for Stripe
+app.use('/webhook', webhookRouter); // Must be before bodyParser.json() for Stripe
 
 app.use(cookieParser());
 app.use(bodyParser.json());
