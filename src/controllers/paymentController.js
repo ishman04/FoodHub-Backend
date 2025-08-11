@@ -91,7 +91,6 @@ const handleWebhook = async (req, res) => {
           status: 'ordered',
         });
 
-        await Cart.deleteOne({ user: userId }); // Clear cart after successful order
 
         console.log(`✅ Order ${newOrder._id} created for PaymentIntent ${paymentIntent.id}`);
       } catch (err) {
