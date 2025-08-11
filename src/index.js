@@ -47,23 +47,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Pass `io` to the app context so controllers can use it
 app.set('io', io);
 
-// Socket.io connection logic
 io.on('connection', (socket) => {
-    console.log(`[Socket.IO] A user connected: ${socket.id}`);
+    console.log(`[Socket.IO] Client Connected: ${socket.id}`);
 
-    // This listener waits for a client to ask to join a specific order room
     socket.on('joinOrderRoom', (roomName) => {
-        if (roomName) {
+        // This is the key confirmation log.
+        console.log(`[Socket.IO] Client ${socket.id} is attempting to join room: '${roomName}'`);
+        
+        if (roomName && typeof roomName === 'string') {
             socket.join(roomName);
-            console.log(`[Socket.IO] Socket ${socket.id} joined room: ${roomName}`);
+            console.log(`[Socket.IO] SUCCESS: Client ${socket.id} successfully joined room: '${roomName}'`);
+        } else {
+            console.error(`[Socket.IO] FAILED: Invalid room name received from client ${socket.id}. RoomName:`, roomName);
         }
     });
 
     socket.on('disconnect', () => {
-        console.log(`[Socket.IO] User disconnected: ${socket.id}`);
+        console.log(`[Socket.IO] Client Disconnected: ${socket.id}`);
     });
 });
-
 
 
 app.get('/ping', (req, res) => {
