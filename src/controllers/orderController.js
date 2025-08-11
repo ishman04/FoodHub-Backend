@@ -1,6 +1,9 @@
+const { restaurantLocation } = require("../config/location");
 const CartRepository = require("../repositories/cartRepository");
 const OrderRepository = require("../repositories/orderRepository");
 const UserRepository = require("../repositories/userRepository");
+const Order = require("../schema/orderSchema");
+const { simulateDriverLocation } = require("../services/locationService");
 const OrderService = require("../services/orderService");
 const AppError = require("../utils/appError");
 
@@ -131,36 +134,50 @@ async function cancelOrder(req,res){
     }
 
 }
-async function changeOrderStatus(req,res){
-    const obj = new OrderService(new CartRepository,new UserRepository,new OrderRepository);
+async function changeOrderStatus(req, res) {
+    const orderService = new OrderService(new CartRepository(), new UserRepository(), new OrderRepository());
     try {
-        const order = await obj.updateStatusOfOrder(req.params.orderId,req.params.status);
+        const { orderId, status } = req.params;
+
+        const order = await orderService.updateStatusOfOrder(orderId, status);
+
+        // If the new status is 'out_for_delivery', trigger the simulation
+        if (status === 'out_for_delivery') {
+            console.log(`[Order Controller] Status for order ${orderId} is 'out_for_delivery'. Starting simulation.`);
+            
+            const io = req.app.get('io'); // Get the socket.io instance from app context
+            const fullOrder = await Order.findById(orderId).populate('address');
+
+            // Ensure we have a valid order with address coordinates
+            if (fullOrder && fullOrder.address && fullOrder.address.lat && fullOrder.address.lng) {
+                const startCoords = restaurantLocation;
+                const endCoords = {
+                    latitude: fullOrder.address.lat,
+                    longitude: fullOrder.address.lng
+                };
+                
+                const roomName = `order_${orderId}`;
+
+                simulateDriverLocation(io, roomName, startCoords, endCoords);
+            } else {
+                console.error(`[Order Controller] Could not start simulation for order ${orderId}: Missing address details.`);
+            }
+        }
+
         res.status(200).json({
             status: true,
             message: "Successfully updated status",
             data: order,
             error: {}
-        })   
+        });
     } catch (error) {
-        console.log(error);
-        if(error instanceof AppError){
-            res.status(error.statusCode).json({
-                status: false,
-                message: error.message,
-                data: {},
-                error: error
-            })
-        }
-        else{
-            res.status(500).json({
-                status: false,
-                message: "Something went wrong",
-                data: {},
-                error: error
-            })
-        }
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: "Something went wrong",
+            error: error.message
+        });
     }
-
 }
 
 async function getAllPendingOrders(req,res){
