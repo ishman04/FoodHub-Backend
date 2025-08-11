@@ -20,15 +20,11 @@ const webhookRouter = require('./routes/webhookRoutes');
 const app = express();
 const server = http.createServer(app); // This line will now work correctly
 
-const allowedOrigins = [
-    "http://localhost:5173", // Your local frontend
-    "https://food-hub-frontend-eight.vercel.app" // Your deployed frontend
-];
 
 // Configure Socket.io with explicit origins
 const io = new Server(server, {
     cors: {
-        origin: true,
+        origin: "https://food-hub-frontend-eight.vercel.app/",
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -36,7 +32,7 @@ const io = new Server(server, {
 
 // Configure Express CORS with explicit origins
 app.use(cors({
-    origin: true,
+    origin: "https://food-hub-frontend-eight.vercel.app/",
     credentials: true
 }));
 
