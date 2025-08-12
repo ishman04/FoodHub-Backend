@@ -16,6 +16,7 @@ const analyticsRouter = require('./routes/analyticsRoute');
 const deliveryRouter =require('./routes/deliveryRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const webhookRouter = require('./routes/webhookRoutes');
+const { resendRouteToLateJoiner } = require('./services/locationService');
 
 const app = express();
 const server = http.createServer(app); // This line will now work correctly
