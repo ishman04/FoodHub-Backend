@@ -53,14 +53,14 @@ io.on('connection', (socket) => {
     console.log(`[Socket.IO] Client Connected: ${socket.id}`);
 
     socket.on('joinOrderRoom', (roomName) => {
-        // This is the key confirmation log.
-        console.log(`[Socket.IO] Client ${socket.id} is attempting to join room: '${roomName}'`);
-        
         if (roomName && typeof roomName === 'string') {
             socket.join(roomName);
-            console.log(`[Socket.IO] SUCCESS: Client ${socket.id} successfully joined room: '${roomName}'`);
+            console.log(`[Socket.IO] Client ${socket.id} joined room: '${roomName}'`);
+            
+            // --- KEY CHANGE: Check if this user needs the route data ---
+            resendRouteToLateJoiner(io, socket, roomName);
         } else {
-            console.error(`[Socket.IO] FAILED: Invalid room name received from client ${socket.id}. RoomName:`, roomName);
+            console.error(`[Socket.IO] FAILED: Invalid room name received from client ${socket.id}.`);
         }
     });
 
@@ -68,7 +68,6 @@ io.on('connection', (socket) => {
         console.log(`[Socket.IO] Client Disconnected: ${socket.id}`);
     });
 });
-
 
 app.get('/ping', (req, res) => {
     console.log('pinged');

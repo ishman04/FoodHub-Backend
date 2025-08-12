@@ -1,32 +1,23 @@
-const axios = require('axios'); // <-- ENSURE THIS IS AT THE TOP
+const axios = require('axios');
 const polyline = require('@mapbox/polyline');
 
 const activeSimulations = new Map();
 
-/**
- * Gets a driving route from the OSRM API.
- * @param {object} startCoords - The starting coordinates ({ latitude, longitude }).
- * @param {object} endCoords - The ending coordinates ({ latitude, longitude }).
- * @returns {Array|null} An array of [latitude, longitude] points, or null if failed.
- */
 async function getRouteFromOSRM(startCoords, endCoords) {
-    // OSRM wants coordinates in {longitude},{latitude} format
+    // ... (This function does not need any changes)
     const start = `${startCoords.longitude},${startCoords.latitude}`;
     const end = `${endCoords.longitude},${endCoords.latitude}`;
-    
-    // Using the free public OSRM demo server
     const url = `http://router.project-osrm.org/route/v1/driving/${start};${end}?overview=full&geometries=polyline`;
-
     try {
-        console.log(`[OSRM] Fetching route from: ${url}`);
         const response = await axios.get(url);
-        
-        if (response.data && response.data.routes && response.data.routes.length > 0) {
-            const encodedPolyline = response.data.routes[0].geometry;
-            // Decode the polyline into an array of [lat, lng] coordinates
-            const decodedRoute = polyline.decode(encodedPolyline);
-            console.log(`[OSRM] Successfully fetched and decoded route with ${decodedRoute.length} points.`);
-            return decodedRoute;
+        if (response.data?.routes?.[0]) {
+            const route = response.data.routes[0];
+            const decodedPolyline = polyline.decode(route.geometry);
+            return {
+                points: decodedPolyline,
+                duration: route.duration,
+                distance: route.distance,
+            };
         }
         return null;
     } catch (error) {
@@ -35,63 +26,71 @@ async function getRouteFromOSRM(startCoords, endCoords) {
     }
 }
 
-
-
-/**
- * Simulates a driver's journey from start to end coordinates.
- * @param {object} io - The Socket.IO server instance.
- * @param {string} roomName - The name of the room to broadcast to (e.g., "order_XYZ").
- * @param {object} startCoords - The starting coordinates ({ latitude, longitude }).
- * @param {object} endCoords - The ending coordinates ({ latitude, longitude }).
- */
 async function simulateDriverLocation(io, roomName, startCoords, endCoords) {
-    // Prevent starting a simulation if one is already active for this room
     if (activeSimulations.has(roomName)) {
-        console.log(`[Location Service] Simulation for ${roomName} is already running.`);
         return;
     }
 
-   const routePoints = await getRouteFromOSRM(startCoords, endCoords);
-
-    // If we couldn't get a route, don't start the simulation
-    if (!routePoints || routePoints.length === 0) {
-        console.error(`[Location Service] Could not get a valid route for ${roomName}. Aborting simulation.`);
-        // Optionally, you could emit an error to the client here
-        // io.to(roomName).emit('tracking_error', { message: 'Could not calculate delivery route.' });
+    const routeData = await getRouteFromOSRM(startCoords, endCoords);
+    if (!routeData) {
+        io.to(roomName).emit('tracking_error', { message: 'Could not calculate a delivery route.' });
         return;
     }
-    // --- END: NEW OSRM LOGIC ---
 
-    console.log(`[Location Service] Starting simulation for room: ${roomName} along a path of ${routePoints.length} points.`);
+    // --- KEY CHANGE: Store route data before starting the interval ---
+    const simulationData = {
+        route: routeData.points,
+        duration: routeData.duration,
+        distance: routeData.distance,
+        intervalId: null, // We'll store the interval ID here
+        currentPointIndex: 0,
+    };
 
-    let currentPointIndex = 0;
-
-    const simulationInterval = setInterval(() => {
-        // If we've reached the end of the route
-        if (currentPointIndex >= routePoints.length) {
-            clearInterval(simulationInterval);
+    // Emit the initial tracking data to anyone already in the room
+    io.to(roomName).emit('trackingStarted', {
+        route: simulationData.route,
+        duration: simulationData.duration,
+        distance: simulationData.distance,
+    });
+    
+    const intervalId = setInterval(() => {
+        const sim = activeSimulations.get(roomName);
+        if (!sim || sim.currentPointIndex >= sim.route.length) {
+            clearInterval(intervalId);
             activeSimulations.delete(roomName);
-            console.log(`[Location Service] Simulation ended for ${roomName}`);
             io.to(roomName).emit('journeyEnded', { message: 'Driver has arrived!' });
             return;
         }
 
-        // Get the next point from the route array
-        const point = routePoints[currentPointIndex];
+        const point = sim.route[sim.currentPointIndex];
         const newLocation = { lat: point[0], lng: point[1] };
         
-        // Broadcast the new location to all clients in the specific order room
-        console.log(`[Location Service] Emitting point ${currentPointIndex + 1}/${routePoints.length} to room ${roomName}:`, newLocation);
         io.to(roomName).emit('locationUpdate', newLocation);
+        sim.currentPointIndex++;
+    }, 2000);
 
-        currentPointIndex++; // Move to the next point for the next interval
-
-    }, 2000); // We can make the interval faster for a smoother animation on a detailed path
-
-    activeSimulations.set(roomName, simulationInterval);
+    // Store the interval ID in our simulation data
+    simulationData.intervalId = intervalId;
+    activeSimulations.set(roomName, simulationData);
+    console.log(`[Simulation] Started for room ${roomName}`);
 }
 
+// --- NEW EXPORTED FUNCTION ---
+// This function will be called from index.js when a user joins a room.
+function resendRouteToLateJoiner(io, socket, roomName) {
+    if (activeSimulations.has(roomName)) {
+        const sim = activeSimulations.get(roomName);
+        console.log(`[Simulation] Late joiner detected for ${roomName}. Resending route data.`);
+        // Use socket.emit to send only to the user who just joined
+        socket.emit('trackingStarted', {
+            route: sim.route,
+            duration: sim.duration,
+            distance: sim.distance,
+        });
+    }
+}
 
 module.exports = {
-    simulateDriverLocation
+    simulateDriverLocation,
+    resendRouteToLateJoiner // <-- Export the new function
 };
