@@ -24,7 +24,8 @@ const server = http.createServer(app); // This line will now work correctly
 // Configure Socket.io with explicit origins
 const io = new Server(server, {
     cors: {
-        origin: "https://food-hub-frontend-eight.vercel.app",
+        // origin: "https://food-hub-frontend-eight.vercel.app",
+        origin: true,
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -32,7 +33,8 @@ const io = new Server(server, {
 
 // Configure Express CORS with explicit origins
 app.use(cors({
-    origin: "https://food-hub-frontend-eight.vercel.app",
+    // origin: "https://food-hub-frontend-eight.vercel.app",
+    origin: true,
     credentials: true
 }));
 
